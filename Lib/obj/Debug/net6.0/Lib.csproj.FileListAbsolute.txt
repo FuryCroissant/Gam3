@@ -1,0 +1,11 @@
+C:\Users\maria\source\repos\NewRepo3\Lib\Lib\bin\Debug\net6.0\Lib.deps.json
+C:\Users\maria\source\repos\NewRepo3\Lib\Lib\bin\Debug\net6.0\Lib.dll
+C:\Users\maria\source\repos\NewRepo3\Lib\Lib\bin\Debug\net6.0\ref\Lib.dll
+C:\Users\maria\source\repos\NewRepo3\Lib\Lib\bin\Debug\net6.0\Lib.pdb
+C:\Users\maria\source\repos\NewRepo3\Lib\Lib\obj\Debug\net6.0\Lib.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\maria\source\repos\NewRepo3\Lib\Lib\obj\Debug\net6.0\Lib.AssemblyInfoInputs.cache
+C:\Users\maria\source\repos\NewRepo3\Lib\Lib\obj\Debug\net6.0\Lib.AssemblyInfo.cs
+C:\Users\maria\source\repos\NewRepo3\Lib\Lib\obj\Debug\net6.0\Lib.csproj.CoreCompileInputs.cache
+C:\Users\maria\source\repos\NewRepo3\Lib\Lib\obj\Debug\net6.0\Lib.dll
+C:\Users\maria\source\repos\NewRepo3\Lib\Lib\obj\Debug\net6.0\ref\Lib.dll
+C:\Users\maria\source\repos\NewRepo3\Lib\Lib\obj\Debug\net6.0\Lib.pdb
