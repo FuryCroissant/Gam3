@@ -21,7 +21,7 @@ class Server
         }
         catch (JsonException)
         {
-            Console.WriteLine("Opponent sent message in unexpected format. Game aborted.");
+            Console.WriteLine("Message in unexpected format.");
         }
         catch (Exception)
         {
@@ -62,7 +62,7 @@ class Server
                     var validationErrors = validator.Validate(gameStateJson, schema);
                     if (validationErrors.Count > 0)
                     {
-                        Console.WriteLine("Schema validation failed while loading last saved state. Starting game from initial state...");
+                        Console.WriteLine("Schema validation failed while loading last saved state. Starting game from initial state.");
                         gameStateJson = null;
                         break;
                     }
