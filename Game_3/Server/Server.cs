@@ -70,7 +70,7 @@ class Server
                     gameState = JsonSerializer.Deserialize<GameState>(gameStateJson);
 
                     isGameLoaded = true;
-                    Console.WriteLine(ConstantValues.GameLoad);
+                    Console.WriteLine(Phrases.GameLoad);
                     break;
                 case "n"://без загрузки
                     isAnswerCorrect = true;
@@ -87,7 +87,7 @@ class Server
         server.Start();
         TcpClient client = await server.AcceptTcpClientAsync();
         server.Stop();
-        Console.WriteLine(ConstantValues.RightConnect);
+        Console.WriteLine(Phrases.RightConnect);
         NetworkStream stream = client.GetStream();
 
         byte[] buffer = new byte[1024];
@@ -100,26 +100,26 @@ class Server
 
         Console.WriteLine("The game is on :)");
 
-        bool isCreatingSequence = gameState.IsServerCreatingSequence;
-        bool isFirstTurn = true;
+        bool SeqCreated = gameState.IsServerCreatingSequence;
+        bool FirstTurn = true;
         bool continueGame = true;
 
         while (continueGame)
         {
-            if (isCreatingSequence)
+            if (SeqCreated)
             {
-                if (isGameLoaded && gameState.Sequence != null && isFirstTurn)//игра была сохранена после передачи пол-ти
+                if (isGameLoaded && gameState.Sequence != null && FirstTurn)//игра была сохранена после передачи пол-ти
                 {
-                    isFirstTurn = false;
+                    FirstTurn = false;
                     goto MidTurn;
                 }
                 //загадать пос-ть
-                Console.Write(ConstantValues.Request);
+                Console.Write(Phrases.Request);
                 string sequence = Console.ReadLine().ToLower();
-                if (sequence == null || sequence.Length != ConstantValues.SeqLength ||
-                    sequence.Any(color => !ConstantValues.AvailableColors.Contains(char.ToLower(color))))
+                if (sequence == null || sequence.Length != Phrases.SeqLength ||
+                    sequence.Any(color => !Phrases.Colors.Contains(char.ToLower(color))))
                 {
-                    Console.WriteLine(ConstantValues.Rewrite);
+                    Console.WriteLine(Phrases.Rewrite);
                     continue;
                 }
                 //отправка посл-ти, сохранение
@@ -128,11 +128,11 @@ class Server
                 Helpers.WriteToBuffer(messageJson, buffer);
                 await stream.WriteAsync(buffer, 0, buffer.Length);
 
-                SaveGameState(new GameState(isCreatingSequence, sequence));
+                SaveGameState(new GameState(SeqCreated, sequence));
 
                 MidTurn:
                 //получение от клиента
-                Console.WriteLine(ConstantValues.WaitResult);
+                Console.WriteLine(Phrases.WaitResult);
                 await stream.ReadAsync(buffer, 0, buffer.Length);
                 messageJson = Helpers.ReadFromBuffer(buffer);
                 Signal? opponentResult = JsonSerializer.Deserialize<Message>(messageJson)?.Signal;
@@ -142,31 +142,31 @@ class Server
 
                 if (opponentResult == Signal.Lost)//выигрыш сервера
                 {
-                    Console.WriteLine(ConstantValues.Victory);
+                    Console.WriteLine(Phrases.Victory);
                     continueGame = false;
                     continue;
                 }
 
                 if (opponentResult == Signal.GotItRight)//поражение
                 {
-                    Console.WriteLine(ConstantValues.RightType);
-                    isCreatingSequence = false;
+                    Console.WriteLine(Phrases.RightType);
+                    SeqCreated = false;
                 }
 
-                SaveGameState(new GameState(isCreatingSequence, null));//новое сохранение "в начале раунда"
+                SaveGameState(new GameState(SeqCreated, null));//новое сохранение "в начале раунда"
             }
             else//загадывает клиент
             {
                 string? sequence;
 
-                if (isGameLoaded && gameState.Sequence != null && isFirstTurn)//если уже было сохранено
+                if (isGameLoaded && gameState.Sequence != null && FirstTurn)//если уже было сохранено
                 {
                     sequence = gameState.Sequence;
-                    isFirstTurn = false;
+                    FirstTurn = false;
                     goto MidTurn;
                 }
                 //получаем посл-ть
-                Console.WriteLine(ConstantValues.WaitSequence);
+                Console.WriteLine(Phrases.WaitSequence);
 
                 await stream.ReadAsync(buffer, 0, buffer.Length);
                 string messageJson = Helpers.ReadFromBuffer(buffer);
@@ -175,21 +175,21 @@ class Server
                 if (sequence == null)
                     throw new JsonException();
                 //сохраняем
-                SaveGameState(new GameState(isCreatingSequence, sequence));
+                SaveGameState(new GameState(SeqCreated, sequence));
 
                 MidTurn:
 
-                Console.WriteLine($"Memorize this sequence ({ConstantValues.MemorizeTime} seconds!): {sequence}");
-                Thread.Sleep(ConstantValues.MemorizeTime * 1000);
+                Console.WriteLine($"Memorize this sequence ({Phrases.MemorizeTime} seconds!): {sequence}");
+                Thread.Sleep(Phrases.MemorizeTime * 1000);
 
                 Console.Clear();
-                Console.Write(ConstantValues.RememberType);
+                Console.Write(Phrases.RememberType);
                 string? recreatedSequence = Console.ReadLine();
                 Message message;
 
                 if (recreatedSequence == null || recreatedSequence.ToLower() != sequence)
                 {
-                    Console.WriteLine(ConstantValues.Defeat);
+                    Console.WriteLine(Phrases.Defeat);
                     message = new() { Signal = Signal.Lost };//проигрыш клиента
                     messageJson = JsonSerializer.Serialize(message);
                     Helpers.WriteToBuffer(messageJson, buffer);
@@ -198,14 +198,14 @@ class Server
                     continue;
                 }
 
-                Console.WriteLine(ConstantValues.RightType);
+                Console.WriteLine(Phrases.RightType);
                 message = new() { Signal = Signal.GotItRight };//выигрыш клиента
                 messageJson = JsonSerializer.Serialize(message);
                 Helpers.WriteToBuffer(messageJson, buffer);
                 await stream.WriteAsync(buffer, 0, buffer.Length);
-                isCreatingSequence = true;
+                SeqCreated = true;
 
-                SaveGameState(new GameState(isCreatingSequence, null));
+                SaveGameState(new GameState(SeqCreated, null));
             }
         }
     }

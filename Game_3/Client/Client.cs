@@ -55,7 +55,7 @@ class Client
             Thread.Sleep(100);
         }
 
-        Console.WriteLine(ConstantValues.RightConnect);
+        Console.WriteLine(Phrases.RightConnect);
 
         NetworkStream stream = client.GetStream();
 
@@ -68,30 +68,30 @@ class Client
         bool isGameLoaded = !gameState.IsServerCreatingSequence || gameState.Sequence != null;
 
         if (isGameLoaded)
-            Console.WriteLine(ConstantValues.GameLoad);
+            Console.WriteLine(Phrases.GameLoad);
 
         Console.WriteLine("The game is on :)");
 
-        bool isCreatingSequence = !gameState.IsServerCreatingSequence;
-        bool isFirstTurn = true;
+        bool SeqCreated = !gameState.IsServerCreatingSequence;
+        bool FirstTurn = true;
         bool continueGame = true;
 
         while (continueGame)
         {
-            if (isCreatingSequence)
+            if (SeqCreated)
             {
-                if (isGameLoaded && gameState.Sequence != null && isFirstTurn)
+                if (isGameLoaded && gameState.Sequence != null && FirstTurn)
                 {
-                    isFirstTurn = false;
+                    FirstTurn = false;
                     goto MidTurn;
                 }
 
-                Console.Write(ConstantValues.Request);
+                Console.Write(Phrases.Request);
                 string? seq = Console.ReadLine().ToLower();
-                if (seq == null || seq.Length != ConstantValues.SeqLength ||
-                    seq.Any(color => !ConstantValues.AvailableColors.Contains(char.ToLower(color))))
+                if (seq == null || seq.Length != Phrases.SeqLength ||
+                    seq.Any(color => !Phrases.Colors.Contains(char.ToLower(color))))
                 {
-                    Console.WriteLine(ConstantValues.Rewrite);
+                    Console.WriteLine(Phrases.Rewrite);
                     continue;
                 }
 
@@ -102,7 +102,7 @@ class Client
 
             MidTurn:
 
-                Console.WriteLine(ConstantValues.WaitResult);
+                Console.WriteLine(Phrases.WaitResult);
                 await stream.ReadAsync(buffer, 0, buffer.Length);
                 messageJson = Helpers.ReadFromBuffer(buffer);
                 Signal? opponentResult = JsonSerializer.Deserialize<Message>(messageJson)?.Signal;
@@ -112,29 +112,29 @@ class Client
 
                 if (opponentResult == Signal.Lost)
                 {
-                    Console.WriteLine(ConstantValues.Victory);
+                    Console.WriteLine(Phrases.Victory);
                     continueGame = false;
                     continue;
                 }
 
                 if (opponentResult == Signal.GotItRight)
                 {
-                    Console.WriteLine(ConstantValues.RightType);
-                    isCreatingSequence = false;
+                    Console.WriteLine(Phrases.RightType);
+                    SeqCreated = false;
                 }
             }
             else
             {
                 string? seq;
 
-                if (isGameLoaded && gameState.Sequence != null && isFirstTurn)
+                if (isGameLoaded && gameState.Sequence != null && FirstTurn)
                 {
                     seq = gameState.Sequence;
-                    isFirstTurn = false;
+                    FirstTurn = false;
                     goto MidTurn;
                 }
 
-                Console.WriteLine(ConstantValues.WaitSequence);
+                Console.WriteLine(Phrases.WaitSequence);
 
                 await stream.ReadAsync(buffer, 0, buffer.Length);
                 string messageJson = Helpers.ReadFromBuffer(buffer);
@@ -145,17 +145,17 @@ class Client
 
                 MidTurn:
 
-                Console.WriteLine($"Memorize this seq ({ConstantValues.MemorizeTime} seconds!): {seq}");
-                Thread.Sleep(ConstantValues.MemorizeTime * 1000);
+                Console.WriteLine($"Memorize this seq ({Phrases.MemorizeTime} seconds!): {seq}");
+                Thread.Sleep(Phrases.MemorizeTime * 1000);
 
                 Console.Clear();
-                Console.Write(ConstantValues.RememberType);
+                Console.Write(Phrases.RememberType);
                 string? recreatedSequence = Console.ReadLine();
                 Message message;
 
                 if (recreatedSequence == null || recreatedSequence.ToLower() != seq)
                 {
-                    Console.WriteLine(ConstantValues.Defeat);
+                    Console.WriteLine(Phrases.Defeat);
                     message = new() { Signal = Signal.Lost };
                     messageJson = JsonSerializer.Serialize(message);
                     Helpers.WriteToBuffer(messageJson, buffer);
@@ -164,12 +164,12 @@ class Client
                     continue;
                 }
 
-                Console.WriteLine(ConstantValues.RightType);
+                Console.WriteLine(Phrases.RightType);
                 message = new() { Signal = Signal.GotItRight };
                 messageJson = JsonSerializer.Serialize(message);
                 Helpers.WriteToBuffer(messageJson, buffer);
                 await stream.WriteAsync(buffer, 0, buffer.Length);
-                isCreatingSequence = true;
+                SeqCreated = true;
             }
         }
     }

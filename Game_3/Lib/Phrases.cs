@@ -1,8 +1,8 @@
 ﻿namespace Lib;
 
-public static class ConstantValues
+public static class Phrases
 {
-    public static readonly char[] AvailableColors = { 'r', 'g', 'b', 'o', 'y', 'p', 'c', 'w' };
+    public static readonly char[] Colors = { 'r', 'g', 'b', 'o', 'y', 'p', 'c', 'w' };
 
     public static readonly int SeqLength = 5;
     public static readonly int MemorizeTime = 5;
