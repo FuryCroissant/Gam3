@@ -17,7 +17,7 @@ class Server
         }
         catch (IOException)
         {
-            Console.WriteLine("Opponent disconnected. Game aborted.");
+            Console.WriteLine("Disconnect.");
         }
         catch (JsonException)
         {

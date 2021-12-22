@@ -28,11 +28,11 @@ class Client
         }
         catch (IOException)
         {
-            Console.WriteLine("Opponent disconnected. Game aborted.");
+            Console.WriteLine("Disconnect.");
         }
         catch (JsonException)
         {
-            Console.WriteLine("Opponent sent message in unexpected format. Game aborted.");
+            Console.WriteLine("Message in unexpected format.");
         }
         catch (Exception)
         {
